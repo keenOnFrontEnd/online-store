@@ -1,3 +1,4 @@
-/node_modules
-/.env
-/static
+/backend/node_modules
+/backend/.env
+/backend/static
+/frontend/node_modules
