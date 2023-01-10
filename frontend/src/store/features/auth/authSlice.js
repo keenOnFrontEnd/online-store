@@ -93,8 +93,6 @@ const authSlice = createSlice({
             state.registerError = action.payload
         }
 
-    },
-    extraReducers: {
     }
 })
 
