@@ -17,15 +17,18 @@ function App() {
   let token = localStorage.getItem('token')
 
   useEffect(() => {
-    dispatch(SetUserThunk())
+    if(token) {
+      dispatch(SetUserThunk())
+    }
   }, [token, dispatch])
+
+  let user = useSelector((state) => state.auth)
  
   const ProtectedRoute = ({
     redirectPath = '/login',
     children,
   }) => {
     let isAuth =  localStorage.getItem('isAuth')
-    console.log(isAuth)
     if (!isAuth) {
       return <Navigate to={redirectPath} replace />
     }
@@ -38,7 +41,7 @@ function App() {
       <Routes>
         <Route path='/' element={<StorePaige />} />
         <Route path='/profile' element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-        <Route path='/basket' element={<ProtectedRoute><BasketPage /></ProtectedRoute>} />
+        <Route path='/basket' element={<ProtectedRoute><BasketPage userId={user.id}/></ProtectedRoute>} />
         <Route path='/login' element={<LoginPage />} />
         <Route path='/register' element={<RegisterPage/>} />
       </Routes>

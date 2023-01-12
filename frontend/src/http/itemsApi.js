@@ -1,23 +1,19 @@
 import axios from "axios";
-import { $authHost } from ".";
+import { $host } from ".";
 
 
 export const getAll = async () => {
-
     try {
-    const data = await $authHost.get('api/item')
+    const data = await $host.get('api/item')
     return data
     } catch (e) {
         return e
     }
-
-    
 }
 
 export const getOne = async (id) => {
-
     try {
-     const data = await $authHost.get(`api/item/${id}`)
+     const data = await $host.get(`api/item/${id}`)
      return data
     } catch (e) {
         return e

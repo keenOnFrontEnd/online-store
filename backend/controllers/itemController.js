@@ -1,6 +1,6 @@
 const uuid = require('uuid')
 const path = require('path')
-const { Item, ItemInfo } = require('../models/models')
+const { Item, ItemInfo, Type, Brand } = require('../models/models')
 const ApiError = require('../error/ApiError')
 
 class ItemController {
@@ -53,13 +53,39 @@ class ItemController {
         return res.json(devices)
     }
     async getOne(req, res) {
-        const { name } = req.params
+        const { id } = req.params
         const selected_item = await Item.findOne(
             {
-                where: { name },
+                where: { id },
                 include: [{ model: ItemInfo, as: 'info' }]
             }
         )
+
+        if(selected_item.typeId && selected_item.brandId) {
+            const selected_item_with_type = await Type.findOne({
+                where: {id: selected_item.typeId}
+            })
+            const selected_item_with_brand = await Brand.findOne({
+                where: {id: selected_item.brandId}
+            })
+            selected_item.brandId = selected_item_with_brand.name
+            selected_item.typeId = selected_item_with_type.name
+            return res.json(selected_item)
+        }
+        if(selected_item.typeId) {
+            const selected_item_with_type = await Type.findOne({
+                where: {id: selected_item.typeId}
+            })
+            selected_item.typeId = selected_item_with_type.name
+            return res.json(selected_item)
+        }
+        if(selected_item.brandId) {
+            const selected_item_with_brand = await Brand.findOne({
+                where: {id: selected_item.brandId}
+            })
+            selected_item.brandId = selected_item_with_brand.name
+            return res.json(selected_item)
+        }
         return res.json(selected_item)
     }
 

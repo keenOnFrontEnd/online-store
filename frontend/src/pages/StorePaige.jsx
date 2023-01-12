@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Container } from 'react-bootstrap';
+import { Container,Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import ItemComponent from '../components/ItemComponent';
 import { getItems } from '../store/features/items/itemsSlice';
@@ -14,8 +14,10 @@ useEffect(() => {
 }, [])
 
   return (
-   <Container fluid="md" className='flex'>
-     {items?.items?.map((item) => <ItemComponent key={item.id} {...item}/>)}
+   <Container fluid="md">
+    <Row md="auto" className="d-flex flex-wrap">
+      {items?.items?.map((item) => <ItemComponent key={item.id} {...item}/>)}
+      </Row>
    </Container>
   )
 }

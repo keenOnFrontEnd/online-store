@@ -1,6 +1,7 @@
 const ApiError = require("../error/ApiError")
 const { BasketItem } = require("../models/models")
-const { Basket } = require("../models/models")
+const { Basket,Item } = require("../models/models")
+const { getOne } = require("./itemController")
 
 class BasketController {
     async getItems(req, res) {
@@ -31,15 +32,15 @@ class BasketController {
     }
     async deleteItem(req, res) {
         try {
-            const { basket_item_id } = req.body
+            const { itemId } = req.params
             const candidate = await BasketItem.findOne({
-                where: { id: basket_item_id }
+                where: { id:itemId }
             })
             if (!candidate) {
                 return res.json(ApiError.badRequest("Not exists"))
             }
             BasketItem.destroy({
-                where: { id: basket_item_id }
+                where: { id: itemId }
             })
             return res.json("deleted")
         } catch (e) {

@@ -1,17 +1,37 @@
 import React from 'react'
-import { Card,ListGroup } from 'react-bootstrap'
+import { Button, Card,ListGroup } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useDispatch, useSelector } from 'react-redux'
+import { AddItemToBasket } from '../store/features/basket/basketSlice'
 
-const ItemComponent = ({name,price,rating,img,typeId,brandId,description}) => {
+
+
+const ItemComponent = ({name,price,rating,img,description,id}) => {
+
+let dispatch = useDispatch()
+
+let user_id = useSelector((state) => state.auth.userId)
+
+let addToCart = () => {
+  let candidate = {
+    user_id,
+    item_id: id
+  }
+  console.log(candidate)
+  dispatch(AddItemToBasket(candidate))
+}
+
   return (
-    <Card style={{ width: '18rem' }}>
-    <Card.Img variant="top" src={'http://localhost:7000/' + img} />
+    <Card style={{ width: '18rem', maxHeight: '20rem', marginRight: '5rem' }} text="primary">
+    <Card.Img variant="top" src={'http://localhost:7000/' + img} style={{height:'100%'}} />
     <Card.Body>
       <Card.Title>{name}</Card.Title>
        {description? <Card.Text>description</Card.Text> : null}
     </Card.Body>
-    <ListGroup className="list-group-flush">
+    <ListGroup variant='flush'>
         <ListGroup.Item>Price: {price}</ListGroup.Item>
         <ListGroup.Item>Rating: {rating}</ListGroup.Item>
+        <ListGroup.Item><Button variant='outline-primary' onClick={() => addToCart() }>Add to cart</Button></ListGroup.Item>
       </ListGroup>
   </Card>
   )

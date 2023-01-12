@@ -1,13 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getAll } from "../../../http/itemsApi";
-
+import { getAll,getOne } from "../../../http/itemsApi";
+import {setBasket} from '../basket/basketSlice'
 
 let initialState = {
     items: [],
     count: null,
-    selectedItem: null,
+    basketItem: [],
     itemsError: [],
-    pending: false
 }
 
 
@@ -17,8 +16,17 @@ export const getItems = createAsyncThunk(
         let res = await getAll();
         if(res.status === 200) {
             dispatch(getAllItems(res.data))
+        } else {
+            rejectWithValue('error')
         }
-        console.log(res)
+    }
+)
+
+export const getItem = createAsyncThunk(
+    'items/getItem',
+     async (action, {rejectWithValue,fulfillWithValue,dispatch}) => {
+        let res = await getOne(action);
+        dispatch(setBasket(res.data))
     }
 )
 
@@ -32,9 +40,6 @@ const itemSlice = createSlice({
             let {rows,count} = action.payload
             state.items = rows
             state.count = count
-        },
-        getOneItem: (state, action) => {
-            state.selectedItem = action.payload
         }
     },
     extraReducers: {
@@ -42,5 +47,5 @@ const itemSlice = createSlice({
     }
 })
 
-export const {getAllItems, getOneItem} = itemSlice.actions
+export const {getAllItems} = itemSlice.actions
 export default itemSlice.reducer
