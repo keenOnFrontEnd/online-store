@@ -1,6 +1,5 @@
 import React from 'react'
 import { Button, Card,ListGroup } from 'react-bootstrap'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useDispatch, useSelector } from 'react-redux'
 import { AddItemToBasket } from '../store/features/basket/basketSlice'
 
@@ -21,6 +20,8 @@ let addToCart = () => {
   dispatch(AddItemToBasket(candidate))
 }
 
+let isAuth = localStorage.getItem('isAuth')
+
   return (
     <Card style={{ width: '18rem', maxHeight: '20rem', marginRight: '5rem' }} text="primary">
     <Card.Img variant="top" src={'http://localhost:7000/' + img} style={{height:'100%'}} />
@@ -30,8 +31,8 @@ let addToCart = () => {
     </Card.Body>
     <ListGroup variant='flush'>
         <ListGroup.Item>Price: {price}</ListGroup.Item>
-        <ListGroup.Item>Rating: {rating}</ListGroup.Item>
-        <ListGroup.Item><Button variant='outline-primary' onClick={() => addToCart() }>Add to cart</Button></ListGroup.Item>
+        <ListGroup.Item>Rating: {rating}</ListGroup.Item>{ isAuth ?
+        <ListGroup.Item><Button variant='outline-primary' onClick={() => addToCart() }>Add to cart</Button></ListGroup.Item> : ''}
       </ListGroup>
   </Card>
   )

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Card, Col, Container, Row } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { DecrementCount, getBasket, IncrementCount, RemoveItemFromBasket, unsetBasketItem } from '../store/features/basket/basketSlice'
+import { DecrementCount, getBasket, IncrementCount, RemoveItemFromBasket} from '../store/features/basket/basketSlice'
 import { getItem } from '../store/features/items/itemsSlice'
 
 
@@ -13,7 +13,7 @@ let BasketItem = ({ id, index, count, totalPrice, setTotal }) => {
 
   useEffect(() => {
     dispatch(getItem(id))
-  }, [])
+  }, [id,dispatch])
 
   let item = useSelector((state) => state.basket.basketItems)
 
@@ -86,8 +86,6 @@ const BasketPage = () => {
 
   let dispatch = useDispatch()
 
-  let [totalCount, setTotalCount] = useState(0)
-
   let user_id = useSelector((state) => state.auth.userId)
   let basket = useSelector((state) => state.basket.basket)
   let basket_items = useSelector((state) => state.basket.basketItems)
@@ -120,7 +118,7 @@ const BasketPage = () => {
                 <div className="float-end">
                   <p className="mb-0 me-5 d-flex align-items-center">
                     <span className="small text-muted me-2">Order total:</span>
-                    <span className="lead fw-normal">{totalCount}</span>
+                    <span className="lead fw-normal">0</span>
                   </p>
                 </div>
               </Card.Body>

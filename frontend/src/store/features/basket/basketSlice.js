@@ -1,7 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { act } from "react-dom/test-utils";
 import { getBasketItems, addItemToBasket as add, Delete, Increment, Decrement } from "../../../http/basketApi";
-import { getOne } from "../../../http/itemsApi";
 
 
 let initialState = {
@@ -27,8 +25,11 @@ export const AddItemToBasket = createAsyncThunk(
     'basket/AddItemToBasket',
     async (action, { rejectWithValue, fulfillWithValue, dispatch }) => {
         let res = await add(action)
-        console.log(res)
-        fulfillWithValue('')
+        if(res.status === 200) {
+            fulfillWithValue('')
+        } else {
+            rejectWithValue('')
+        }
     }
 )
 
@@ -65,8 +66,6 @@ export const DecrementCount = createAsyncThunk(
         }
     }
 )
-
-
 
 const basketSlce = createSlice({
     name: 'basket',
