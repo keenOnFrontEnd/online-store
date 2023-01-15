@@ -21,6 +21,18 @@ class BasketController {
             const { id } = await Basket.findOne({
                 where: { userId: user_id }
             })
+            const candidate = await BasketItem.findOne({
+                where: {
+                    itemId: item_id,
+                    basketId: id}
+            })
+
+            if(candidate) {
+                candidate.update({count: candidate.count + 1})
+                candidate.save()
+                return res.json(`${candidate.id} count is increase ${candidate.count}`)
+            }
+
             await BasketItem.create({
                 itemId: item_id,
                 basketId: id
@@ -28,6 +40,45 @@ class BasketController {
             return res.json(`${item_id} item is added`)
         } catch (e) {
             return res.json(ApiError.badRequest(e.message))
+        }
+    }
+    async increaseItem(req,res) {
+        try {
+            const {id} = req.body
+
+            const candidate = await BasketItem.findOne({
+                where: {id}
+            })
+            if (!candidate) {
+                return res.json(ApiError.badRequest("Not exists"))
+            }
+            candidate.update({count: candidate.count + 1})
+            candidate.save()
+            return res.json("increased") 
+
+        } catch (e) {
+            return es.json(ApiError.badRequest(e.message))
+        }
+    }
+    async decreaseItem(req,res) {
+        try {
+            const {id} = req.body
+            const candidate = await BasketItem.findOne({
+                where: {id}
+            })
+            if (!candidate) {
+                return res.json(ApiError.badRequest("Not exists"))
+            }
+            candidate.update({count: candidate.count - 1})
+            candidate.save()
+            if(candidate.count === 0) {
+                candidate.destroy()
+                return res.json("destroyed") 
+            }
+            return res.json("increased") 
+
+        } catch (e) {
+            return es.json(ApiError.badRequest(e.message))
         }
     }
     async deleteItem(req, res) {

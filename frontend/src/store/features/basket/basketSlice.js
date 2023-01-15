@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { act } from "react-dom/test-utils";
-import { getBasketItems, addItemToBasket as add, Delete } from "../../../http/basketApi";
+import { getBasketItems, addItemToBasket as add, Delete, Increment, Decrement } from "../../../http/basketApi";
 import { getOne } from "../../../http/itemsApi";
 
 
@@ -36,9 +36,36 @@ export const RemoveItemFromBasket = createAsyncThunk(
     'basket/RemoveItemFromBasket',
     async (action, { rejectWithValue, fulfillWithValue, dispatch }) => {
         await Delete(action)
-
+        dispatch(unsetBasketItem(action))
+        fulfillWithValue('')
     }
 )
+
+export const IncrementCount = createAsyncThunk(
+    'basket/IncrementCount',
+    async (action, {fulfillWithValue,rejectWithValue, dispatch}) => {
+        const res = await Increment(action.id)
+        if(res.status === 200) {
+            dispatch(increment(action.index))
+            fulfillWithValue('')
+        } else {
+            rejectWithValue('')
+        }
+    }
+)
+export const DecrementCount = createAsyncThunk(
+    'basket/IncrementCount',
+    async (action, {fulfillWithValue,rejectWithValue, dispatch}) => {
+        const res = await Decrement(action.id)
+        if(res.status === 200) {
+            dispatch(decrement(action.index))
+            fulfillWithValue('')
+        } else {
+            rejectWithValue('')
+        }
+    }
+)
+
 
 
 const basketSlce = createSlice({
@@ -52,7 +79,14 @@ const basketSlce = createSlice({
             state.basketItems.push(action.payload)
         },
         unsetBasketItem: (state, action) => {
-            state.basketItems.filter((item) => item.id !== action.payload)
+            state.basket.rows = state.basket.rows.filter((item) => item.id !== action.payload)
+            state.basket.count = state.basket.count - 1
+        },
+        increment: (state,action) => {
+            state.basket.rows[action.payload].count = state.basket.rows[action.payload].count + 1
+        },
+        decrement: (state,action) => {
+            state.basket.rows[action.payload].count = state.basket.rows[action.payload].count - 1
         }
     }
 })
@@ -60,5 +94,5 @@ const basketSlce = createSlice({
 
 
 
-export const { getAllItems, setBasket, unsetBasketItem } = basketSlce.actions
+export const { getAllItems, setBasket, unsetBasketItem,increment,decrement } = basketSlce.actions
 export default basketSlce.reducer

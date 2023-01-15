@@ -27,3 +27,20 @@ export const Delete = async(id) => {
         return e
     }
 }
+
+export const Increment = async(id) => {
+    try {
+        const data = await $authHost.post("api/basket/increment", {id})
+        return data
+    } catch (e) {
+        return e
+    }
+}
+export const Decrement = async(id) => {
+    try {
+        const data = await $authHost.post("api/basket/decrement", {id})
+        return data
+    } catch (e) {
+        return e
+    }
+}
