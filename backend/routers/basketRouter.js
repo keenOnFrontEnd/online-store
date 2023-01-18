@@ -9,6 +9,7 @@ router.post('/',authMiddleware,basketController.addItem)
 router.delete('/:itemId',authMiddleware,basketController.deleteItem)
 router.post('/increment', authMiddleware, basketController.increaseItem)
 router.post('/decrement',authMiddleware,basketController.decreaseItem)
+router.get('/total/:basketId', authMiddleware, basketController.totalCount)
 
 
 module.exports = router

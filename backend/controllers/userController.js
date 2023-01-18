@@ -44,7 +44,6 @@ class UserController {
         return res.json({token})
     }   
    
-
 }
 
 module.exports = new UserController()

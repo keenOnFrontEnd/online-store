@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Card, Col, Container, Row } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { DecrementCount, getBasket, IncrementCount, RemoveItemFromBasket} from '../store/features/basket/basketSlice'
+import { TotalCount } from '../http/basketApi'
+import { DecrementCount, getBasket, IncrementCount, RemoveItemFromBasket, Total} from '../store/features/basket/basketSlice'
 import { getItem } from '../store/features/items/itemsSlice'
 
 
 
-let BasketItem = ({ id, index, count, totalPrice, setTotal }) => {
+let BasketItem = ({ id, index, count, user_id }) => {
 
   let [isLoading, setisLoading] = useState(true)
   let dispatch = useDispatch()
@@ -26,17 +27,17 @@ let BasketItem = ({ id, index, count, totalPrice, setTotal }) => {
   }, [item, index])
 
   let Delete = () => {
-    dispatch(RemoveItemFromBasket(basket.rows[index].id))
+    dispatch(RemoveItemFromBasket({id: basket.rows[index].id, user_id}))
   }
 
   let Increment = () => {
-    dispatch(IncrementCount({ id: basket.rows[index].id, index }))
+    dispatch(IncrementCount({ id: basket.rows[index].id, index, user_id }))
   }
   let Decrement = () => {
     if(count === 1) {
       Delete()
     } else {
-      dispatch(DecrementCount({ id: basket.rows[index].id, index }))
+      dispatch(DecrementCount({ id: basket.rows[index].id, index, user_id }))
     }
   }
 
@@ -88,7 +89,7 @@ const BasketPage = () => {
 
   let user_id = useSelector((state) => state.auth.userId)
   let basket = useSelector((state) => state.basket.basket)
-  let basket_items = useSelector((state) => state.basket.basketItems)
+  let total = useSelector((state) => state.basket.totalCount)
 
   useEffect(() => {
     if (user_id) {
@@ -96,6 +97,11 @@ const BasketPage = () => {
     }
   }, [user_id, dispatch])
 
+  useEffect(() => {
+    if(user_id ) {
+      dispatch(Total(user_id))
+    }
+  }, [])
   
 
   return (
@@ -107,7 +113,7 @@ const BasketPage = () => {
             <span className="h4">( {basket?.count ? basket.count : 0} item in your cart)</span>
             <Card className='mt-5' bg='light'>
               {basket?.rows.length ?
-                basket.rows.map((i, index) => <BasketItem key={i.id} id={i.itemId} index={index} count={i.count}/>) :
+                basket.rows.map((i, index) => <BasketItem key={i.id} id={i.itemId} index={index} count={i.count} user_id={user_id}/>) :
 
                 <span className='h3'> No elements in the shopping cart </span>
 
@@ -118,7 +124,7 @@ const BasketPage = () => {
                 <div className="float-end">
                   <p className="mb-0 me-5 d-flex align-items-center">
                     <span className="small text-muted me-2">Order total:</span>
-                    <span className="lead fw-normal">0</span>
+                    <span className="lead fw-normal">{total}</span>
                   </p>
                 </div>
               </Card.Body>

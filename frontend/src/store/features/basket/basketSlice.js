@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getBasketItems, addItemToBasket as add, Delete, Increment, Decrement } from "../../../http/basketApi";
+import { getBasketItems, addItemToBasket as add, Delete, Increment, Decrement, TotalCount } from "../../../http/basketApi";
 
 
 let initialState = {
-    basketItems: []
+    basketItems: [],
+    totalCount: 0
 }
 
 
@@ -36,8 +37,10 @@ export const AddItemToBasket = createAsyncThunk(
 export const RemoveItemFromBasket = createAsyncThunk(
     'basket/RemoveItemFromBasket',
     async (action, { rejectWithValue, fulfillWithValue, dispatch }) => {
-        await Delete(action)
-        dispatch(unsetBasketItem(action))
+        await Delete(action.id)
+        let total = await TotalCount(action.user_id)
+        dispatch(unsetBasketItem(action.id))
+        dispatch(totalCount(total.data))
         fulfillWithValue('')
     }
 )
@@ -46,8 +49,10 @@ export const IncrementCount = createAsyncThunk(
     'basket/IncrementCount',
     async (action, {fulfillWithValue,rejectWithValue, dispatch}) => {
         const res = await Increment(action.id)
+        const total = await TotalCount(action.user_id)
         if(res.status === 200) {
             dispatch(increment(action.index))
+            dispatch(totalCount(total.data))
             fulfillWithValue('')
         } else {
             rejectWithValue('')
@@ -58,12 +63,22 @@ export const DecrementCount = createAsyncThunk(
     'basket/IncrementCount',
     async (action, {fulfillWithValue,rejectWithValue, dispatch}) => {
         const res = await Decrement(action.id)
+        const total = await TotalCount(action.user_id)
         if(res.status === 200) {
             dispatch(decrement(action.index))
+            dispatch(totalCount(total.data))
             fulfillWithValue('')
         } else {
             rejectWithValue('')
         }
+    }
+)
+
+export const Total = createAsyncThunk(
+    'basket/Total',
+    async (action, {fulfillWithValue,rejectWithValue,dispatch}) => {
+        const res = await TotalCount(action)
+        dispatch(totalCount(res.data))
     }
 )
 
@@ -86,6 +101,9 @@ const basketSlce = createSlice({
         },
         decrement: (state,action) => {
             state.basket.rows[action.payload].count = state.basket.rows[action.payload].count - 1
+        },
+        totalCount: (state,action) => {
+            state.totalCount = action.payload
         }
     }
 })
@@ -93,5 +111,5 @@ const basketSlce = createSlice({
 
 
 
-export const { getAllItems, setBasket, unsetBasketItem,increment,decrement } = basketSlce.actions
+export const { getAllItems, setBasket, unsetBasketItem,increment,decrement,totalCount } = basketSlce.actions
 export default basketSlce.reducer

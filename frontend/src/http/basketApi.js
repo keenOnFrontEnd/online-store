@@ -44,3 +44,12 @@ export const Decrement = async(id) => {
         return e
     }
 }
+
+export const TotalCount = async(id) => {
+    try {
+        const data = await $authHost.get(`api/basket/total/${id}`)
+        return data
+    } catch (e) {
+        return e
+    }
+}
