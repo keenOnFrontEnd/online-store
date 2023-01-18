@@ -88,7 +88,7 @@ class ItemController {
 
     async delete(req, res) {
         try {
-            const { name } = req.body
+            const { name } = req.params
             const candidate = await Item.findOne({
                 where: { name }
             })

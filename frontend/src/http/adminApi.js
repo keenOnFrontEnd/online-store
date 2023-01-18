@@ -35,7 +35,7 @@ export const DeleteType = async ({name}) => {
     }
 }
 
-export const ItemCreate = async ({data}) => {
+export const ItemCreate = async (data) => {
     try {
         let res = await $authHost.post(`api/item/create`, data,{
             headers: { "Content-Type": "multipart/form-data" }
