@@ -5,6 +5,7 @@ class BrandController {
     async create(req, res) {
         try {
             const { name } = req.body
+            console.log(name)
             const type = await Brand.create({ name })
             return res.json(type)
         } catch (e) {
@@ -28,7 +29,7 @@ class BrandController {
     }
     async delete(req, res) {
         try {
-            const { name } = req.body
+            const { name } = req.params
             const candidate = await Brand.findOne({
                 where: { name }
             })

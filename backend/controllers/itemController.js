@@ -6,25 +6,22 @@ const ApiError = require('../error/ApiError')
 class ItemController {
     async create(req, res, next) {
         try {
-            let { name, price, brandId, typeId, info } = req.body
+            let { name, price, brandName, typeName, info } = req.body
+
+            const brand = await Brand.findOrCreate({
+                where: {name: brandName}
+            })
+            
+            const type = await Type.findOrCreate({
+                where: {name: typeName}
+            })
+            let typeId = type[0].id
+            let brandId = brand[0].id
             const { img } = req.files
             let fileName = uuid.v4() + ".jpg"
             img.mv(path.resolve(__dirname, '..', 'static', fileName))
             const item = await Item.create({ name, price, brandId, typeId, info, img: fileName })
-
-            if (info) {
-                info = JSON.parse(info)
-                info.forEach(i => {
-                    DeviceInfo.create({
-                        title: i.title,
-                        description: i.description,
-                        itemid: item.id
-                    })
-                });
-            }
-
-
-            return res.json(device)
+            return res.json(item)
         } catch (e) {
             next(ApiError.badRequest(e.message))
         }

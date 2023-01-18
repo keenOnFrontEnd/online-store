@@ -6,7 +6,6 @@ import { login, registration } from "../../../http/userApi";
 let initialState = {
     email: '',
     userId: '',
-    role: '',
     registerError: [],
     loginError: [],
 }
@@ -19,7 +18,8 @@ export const LoginThunk = createAsyncThunk(
             localStorage.setItem('token', res.data.token)
             localStorage.setItem('isAuth', true)
             let { id, role, email } = jwtDecode(res.data.token)
-            dispatch(setUser({ id, role, email }))
+            localStorage.setItem('role', role)
+            dispatch(setUser({ id, email }))
             return fulfillWithValue()
         }
         if(res.response.status === 500) {
@@ -41,7 +41,8 @@ export const RegisterThunk = createAsyncThunk(
                 localStorage.setItem('token', res.data)
                 localStorage.setItem('isAuth', true)
                 let { id, role, email } = jwtDecode(res.data)
-                dispatch(setUser({ id, role, email }))
+                localStorage.setItem('role', role)
+                dispatch(setUser({ id,email }))
                 return fulfillWithValue()
             }    
             if(res.response.status === 404) {
@@ -58,11 +59,11 @@ export const RegisterThunk = createAsyncThunk(
 
 export const SetUserThunk = createAsyncThunk(
     'auth/setUser',
-    async (action, { rejectWithValue, dispatch }) => {
+    async (action, { dispatch }) => {
         let token = localStorage.getItem('token')
         if (token) {
-            let { id, role, email } = jwtDecode(token)
-            dispatch(setUser({ id, role, email }))
+            let { id, email } = jwtDecode(token)
+            dispatch(setUser({ id, email }))
         } else {
             dispatch(Logout())
         }
@@ -76,13 +77,11 @@ const authSlice = createSlice({
         Logout: (state, action) => {
             state.email = ''
             state.userId = ''
-            state.role = ''
             localStorage.clear()
         },
         setUser: (state, action) => {
             state.userId = action.payload.id
             state.email = action.payload.email
-            state.role = action.payload.role
             state.registerError = []
             state.loginError = []
         },

@@ -12,7 +12,7 @@ const Navigation = () => {
 
   let dispatch = useDispatch()
 
-  let role = useSelector((state) => state.auth.role)
+  let role = localStorage.getItem('role')
 
   let navigate = useNavigate();
 
@@ -29,13 +29,13 @@ const Navigation = () => {
             <Nav.Link href="/">Store</Nav.Link>
             {token ?
              <>
-             {role === 'ADMIN' ? <span>{role}</span> : ""}
             <Nav.Link href="/profile">Profile</Nav.Link>
             <Nav.Link href="/basket">Basket</Nav.Link>
             <Button className='ml-1' variant="outline-primary" onClick={() => LogoutHandler()}>Logout</Button>
             </>:
             <><Nav.Link href='/register'>Register</Nav.Link>
             <Nav.Link href='/login'>Login</Nav.Link></>}
+            {role === "ADMIN" ? <Nav.Link href='/admin'>Admin Panel</Nav.Link> : ''}
           </Nav>
         </Container>
       </Navbar>

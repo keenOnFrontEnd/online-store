@@ -9,6 +9,7 @@ import LoginPage from './components/LoginPage';
 import { useDispatch, useSelector } from 'react-redux';
 import { SetUserThunk } from './store/features/auth/authSlice';
 import RegisterPage from './components/RegisterPage';
+import AdminPage from './pages/AdminPage';
 
 function App() {
 
@@ -28,22 +29,33 @@ function App() {
     redirectPath = '/login',
     children,
   }) => {
-    let isAuth =  localStorage.getItem('isAuth')
+    let isAuth = localStorage.getItem('isAuth')
     if (!isAuth) {
       return <Navigate to={redirectPath} replace />
     }
     return children;
   };
+  const AdminRoute = ({
+    redirectPath = '/',
+    children
+  }) => {
+    let role = localStorage.getItem('role')
+    if(role !=="ADMIN") {
+      return <Navigate to={redirectPath} replace/>
+    }
+    return children
+  }
 
   return (
     <>
       <Navigation />
       <Routes>
         <Route path='/' element={<StorePaige />} />
+        <Route path='/admin' element={<AdminRoute><AdminPage/></AdminRoute>} />
         <Route path='/profile' element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path='/basket' element={<ProtectedRoute><BasketPage userId={user.id}/></ProtectedRoute>} />
         <Route path='/login' element={<LoginPage />} />
-        <Route path='/register' element={<RegisterPage/>} />
+        <Route path='/register' element={<RegisterPage/>} />  
       </Routes>
     </>
   );

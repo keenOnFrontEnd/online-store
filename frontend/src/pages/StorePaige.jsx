@@ -14,10 +14,8 @@ useEffect(() => {
 }, [])
 
   return (
-   <Container fluid="md">
-    <Row md="auto" className="d-flex flex-wrap">
-      {items?.items?.map((item) => <ItemComponent key={item.id} {...item}/>)}
-      </Row>
+   <Container fluid="md" className='d-md-flex'>
+    {items?.items?.map((item) => <ItemComponent key={item.id} {...item}/>)}
    </Container>
   )
 }
