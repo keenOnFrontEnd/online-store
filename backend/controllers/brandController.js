@@ -4,10 +4,16 @@ const { Brand } = require("../models/models")
 class BrandController {
     async create(req, res) {
         try {
-            const { name } = req.body
-            console.log(name)
-            const type = await Brand.create({ name })
-            return res.json(type)
+            const candidate = await Brand.findOne({
+                where: {
+                    name: req.body.name
+                }
+            })
+            if(candidate) {
+                return res.json("Already Exists")
+            }
+            const brand = await Brand.create({ name: req.body.name })
+            return res.json(brand)
         } catch (e) {
             return res.json(ApiError.badRequest(e.message))
         }

@@ -1,11 +1,21 @@
+const ApiError = require('../error/ApiError')
 const {Type} = require('../models/models')
 
 
 
 class TypeController {
     async create (req,res) {
-        const {name} = req.body 
-        const type = await Type.create({name})
+        
+        console.log(req.body)
+        const candidate = await Type.findOne({
+            where: {
+                name: req.body.name
+            }
+        })
+        if (candidate) {
+            return res.json("Alreadi exist")
+        }
+        const type = await Type.create({name: req.body.name})
         return res.json(type)
     }
     async get (req,res) {
@@ -21,10 +31,10 @@ class TypeController {
             if(!candidate) {
                return res.json(ApiError.badRequest("Not exists")) 
             }
-            await Type.destroy({
+            let responce = await Type.destroy({
                 where: {name}
             })
-            return res.json("OK")
+            return res.json(responce)
         } catch (e) {
             return res.json(ApiError.internal(e.message))
         }

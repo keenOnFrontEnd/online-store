@@ -2,18 +2,18 @@ const uuid = require('uuid')
 const path = require('path')
 const { Item, ItemInfo, Type, Brand } = require('../models/models')
 const ApiError = require('../error/ApiError')
-
+const { Op } = require('sequelize')
 class ItemController {
     async create(req, res, next) {
         try {
             let { name, price, brandName, typeName, info } = req.body
 
             const brand = await Brand.findOrCreate({
-                where: {name: brandName}
+                where: { name: brandName }
             })
-            
+
             const type = await Type.findOrCreate({
-                where: {name: typeName}
+                where: { name: typeName }
             })
             let typeId = type[0].id
             let brandId = brand[0].id
@@ -51,34 +51,38 @@ class ItemController {
     }
     async getOne(req, res) {
         const { id } = req.params
+        console.log(id)
         const selected_item = await Item.findOne(
             {
                 where: { id },
                 include: [{ model: ItemInfo, as: 'info' }]
             }
         )
+        if(!selected_item) {
+            return res.json(ApiError.internal("Not Exist"))
+        }
 
-        if(selected_item.typeId && selected_item.brandId) {
+        if (selected_item.typeId && selected_item.brandId) {
             const selected_item_with_type = await Type.findOne({
-                where: {id: selected_item.typeId}
+                where: { id: selected_item.typeId }
             })
             const selected_item_with_brand = await Brand.findOne({
-                where: {id: selected_item.brandId}
+                where: { id: selected_item.brandId }
             })
             selected_item.brandId = selected_item_with_brand.name
             selected_item.typeId = selected_item_with_type.name
             return res.json(selected_item)
         }
-        if(selected_item.typeId) {
+        if (selected_item.typeId) {
             const selected_item_with_type = await Type.findOne({
-                where: {id: selected_item.typeId}
+                where: { id: selected_item.typeId }
             })
             selected_item.typeId = selected_item_with_type.name
             return res.json(selected_item)
         }
-        if(selected_item.brandId) {
+        if (selected_item.brandId) {
             const selected_item_with_brand = await Brand.findOne({
-                where: {id: selected_item.brandId}
+                where: { id: selected_item.brandId }
             })
             selected_item.brandId = selected_item_with_brand.name
             return res.json(selected_item)
@@ -103,6 +107,149 @@ class ItemController {
             return res.json(ApiError.internal(e.message))
         }
     }
+
+    async searchByName(req, res) {
+        try {
+            const {name,brand,type} = req.query
+
+            if (name && brand && type) {
+                const candidateBrand = await Brand.findOne({
+                    where: {
+                        name: brand
+                    }
+                })
+                const candidateType = await Type.findOne({
+                    where: {
+                        name: type
+                    }
+                })
+                const candidateByName = await Item.findAndCountAll({
+                    where: {
+                        brandId: candidateBrand.id,
+                        typeId: candidateType.id,
+                        name: {
+                            [Op.like]: "%" + name + "%"
+                        }
+                    }
+                })
+                if (!candidateByName) {
+                    return res.json(ApiError.internal("Not Found"))
+                }
+                return res.json(candidateByName)
+            }
+            if(name && !brand && !type) {
+                const candidateByName = await Item.findAndCountAll({
+                    where: {
+                        name: {
+                            [Op.like]: '%' + name + '%'
+                        }
+                    }
+                })
+                if (!candidateByName) {
+                    return res.json(ApiError.internal("Not Found"))
+                }
+                return res.json(candidateByName)
+            }
+            if(!name && brand && !type) {
+                const candidateBrand = await Brand.findOne({
+                    where: {
+                        name: brand
+                    }
+                })
+                const candidateByName = await Item.findAndCountAll({
+                    where: {
+                        brandId: candidateBrand.id
+                    }
+                })
+                if (!candidateByName) {
+                    return res.json(ApiError.internal("Not Found"))
+                }
+                return res.json(candidateByName)
+
+            }
+            if(!name && !brand && type) {
+                const candidateType = await Type.findOne({
+                    where: {
+                        name: type
+                    }
+                })
+                const candidateByName = await Item.findAndCountAll({
+                    where: {
+                        typeId: candidateType.id
+                    }
+                })
+                if (!candidateByName) {
+                    return res.json(ApiError.internal("Not Found"))
+                }
+                return res.json(candidateByName)
+            }
+            if (name && brand && !type) {
+                const candidateBrand = await Brand.findOne({
+                    where: {
+                        name: brand
+                    }
+                })
+                const candidateByName = await Item.findAndCountAll({
+                    where: {
+                        brandId: candidateBrand.id,
+                        name: {
+                            [Op.like]: "%" + name + "%"
+                        }
+                    }
+                })
+                if (!candidateByName) {
+                    return res.json(ApiError.internal("Not Found"))
+                }
+
+                return res.json(candidateByName)
+            }
+            if (!name && brand && type) {
+                const candidateBrand = await Brand.findOne({
+                    where: {
+                        name: brand
+                    }
+                })
+                const candidateType = await Type.findOne({
+                    where: {
+                        name: type
+                    }
+                })
+                const candidateByName = await Item.findAndCountAll({
+                    where: {
+                        brandId: candidateBrand.id,
+                        typeId: candidateType.id
+                    }
+                })
+                if (!candidateByName) {
+                    return res.json(ApiError.internal("Not Found"))
+                }
+
+                return res.json(candidateByName)
+            }
+            if (name && !brand && type) {
+                const candidateType = await Type.findOne({
+                    where: {
+                        name: type
+                    }
+                })
+                const candidateByName = await Item.findAndCountAll({
+                    where: {
+                        typeId: candidateType.id,
+                        name: {
+                            [Op.like]: "%" + name + "%"
+                        }
+                    }
+                })
+                if (!candidateByName) {
+                    return res.json(ApiError.internal("Not Found"))
+                }
+                return res.json(candidateByName)
+            }
+        } catch (e) {
+            return res.json(ApiError.badRequest(e.message))
+        }
+    }
+
 
 }
 

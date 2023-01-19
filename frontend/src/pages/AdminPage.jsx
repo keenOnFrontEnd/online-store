@@ -26,37 +26,33 @@ const AdminPage = () => {
 
 
     const addBrand = () => {
-
-        if (brandName) {
-            CreateBrand({ name: brandName })
-        }
-        else {
+        if (brandName.length < 1) {
             console.log('no info')
+        } else {
+            CreateBrand(brandName)
         }
+
     }
     const deleteBrand = () => {
 
-        if (brandNameToDelete) {
-            DeleteBrand({ name: brandNameToDelete })
-        }
-        else {
+        if (brandNameToDelete.length < 1) {
             console.log('no info')
         }
+        else { DeleteBrand(brandNameToDelete) }
     }
     const createType = () => {
-        if (typeName) {
-            CreateType({ name: typeName })
-        } else {
+        if (typeName.length < 1) {
             console.log('no info')
+        } else {
+            CreateType(typeName)
         }
-
     }
     const deleteType = () => {
 
-        if (typeNameToDelete) {
-            DeleteType({ name: typeNameToDelete })
-        } else {
+        if (typeNameToDelete.length < 1) {
             console.log('no info')
+        } else {
+            DeleteType(typeNameToDelete)
         }
 
     }
@@ -77,11 +73,10 @@ const AdminPage = () => {
     }
 
     const deleteItem = () => {
-        if (itemNameToDelete) {
-            DeleteItem({ name: itemNameToDelete })
-        } else {
+        if (itemNameToDelete.length < 1) {
             console.log('no info')
         }
+        else { DeleteItem({ name: itemNameToDelete }) }
     }
 
 

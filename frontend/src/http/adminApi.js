@@ -1,14 +1,14 @@
 import { $authHost } from "."
 
-export const CreateBrand = async ({name}) => {
-    try {
-        let res = await $authHost.post('api/brand/create', name)
+export const CreateBrand = async (name) => {
+    try {   
+        let res = await $authHost.post('api/brand/create',{name})
         console.log(res)
     } catch (e) {
         console.log(e)
     }
 }
-export const DeleteBrand = async ({name}) => {
+export const DeleteBrand = async (name) => {
     try {
         let res = await $authHost.delete(`api/brand/delete/${name}`)
         console.log(res)
@@ -17,16 +17,16 @@ export const DeleteBrand = async ({name}) => {
     }
 }
 
-export const CreateType = async ({name}) => {
+export const CreateType = async (name) => {
     try {
-        let res = await $authHost.post('api/type/create', name)
+        let res = await $authHost.post('api/type/create',{name})
         console.log(res)
     } catch (e) {
         console.log(e)
     }
 }
 
-export const DeleteType = async ({name}) => {
+export const DeleteType = async (name) => {
     try {
         let res = await $authHost.delete(`api/type/delete/${name}`)
         console.log(res)
