@@ -20,24 +20,25 @@ const StorePaige = () => {
   useEffect(() => {
     if(query) {
       let url = '?' + queryString.stringify(query)
-      console.log(url)
       dispatch(getItems(url))
     } else {
       dispatch(getItems())
     }
-  }, [])
+  }, [location.search])
+
+
 
   return (
-    <Container fluid="md" className='d-flex'>
-      <Row lg="auto">
+    <Container fluid="auto" className='d-flex'>
         <Col>
-          <SearchComponent/>
+           <SearchComponent/>
         </Col>
-        <Row>
+        <Row style={{
+        width: "80%"
+        }}>
           {items?.items?.map((item) => <ItemComponent key={item.id} {...item} />)}
           {!items.items.length ? <div className='text-center'> <h3>No elements found</h3>  </div> : ''}
         </Row>
-      </Row>
     </Container>
   )
 }
