@@ -5,7 +5,6 @@ const {Type} = require('../models/models')
 
 class TypeController {
     async create (req,res) {
-        
         console.log(req.body)
         const candidate = await Type.findOne({
             where: {

@@ -27,28 +27,6 @@ class ItemController {
         }
 
     }
-    async get(req, res) {
-        let { brandId, typeId, limit, page } = req.query
-        page = page || 1
-        limit = limit || 10
-
-        let offset = page * limit - limit
-
-        let devices;
-        if (!brandId && !typeId) {
-            devices = await Item.findAndCountAll({ limit, offset })
-        }
-        if (brandId && !typeId) {
-            devices = await Item.findAndCountAll({ where: { brandId }, limit, offset })
-        }
-        if (!brandId && typeId) {
-            devices = await Item.findAndCountAll({ where: { typeId }, limit, offset })
-        }
-        if (brandId && typeId) {
-            devices = await Item.findAndCountAll({ where: { typeId, brandId }, limit, offset })
-        }
-        return res.json(devices)
-    }
     async getOne(req, res) {
         const { id } = req.params
         const selected_item = await Item.findOne(
@@ -109,13 +87,26 @@ class ItemController {
 
     async search(req, res) {
         try {
-            let { name, brand, type } = req.query
+            let { name, brand, type, limit, page  } = req.query
+
+            page = page || 1
+            limit = limit || 10
+            let offset = page * limit - limit
+
+            let candidateDevice;
+            let candidateBrand;
+            let candidateType;
+
+            if(!name && !brand && !type) {
+                candidateDevice = await Item.findAndCountAll({ limit, offset })
+                return res.json(candidateDevice)
+            }
 
             if (name && brand && type) {
                 brand = brand.split(',')
                 type = type.split(',')
 
-                let candidateBrand = await Brand.findAll({
+                candidateBrand = await Brand.findAll({
                     where: {
                         name: brand
                     }
@@ -123,7 +114,7 @@ class ItemController {
                 for (let i = 0; i < candidateBrand.length; i++) {
                     candidateBrand[i] = candidateBrand[i].dataValues.id
                 }
-                let candidateType = await Type.findAll({
+                candidateType = await Type.findAll({
                     where: {
                         name: type
                     }
@@ -131,36 +122,38 @@ class ItemController {
                 for (let i = 0; i < candidateType.length; i++) {
                     candidateType[i] = candidateType[i].dataValues.id
                 }
-                const candidateByName = await Item.findAndCountAll({
+                candidateDevice = await Item.findAndCountAll({
                     where: {
                         brandId: candidateBrand,
                         typeId: candidateType,
                         name: {
                             [Op.iLike]: "%" + name + "%"
                         }
-                    }
+                    },
+                    limit,
+                    offset
                 })
-                if (!candidateByName) {
+                if (!candidateDevice) {
                     return res.json(ApiError.internal("Not Found"))
                 }
-                return res.json(candidateByName)
+                return res.json(candidateDevice)
             }
             if (name && !brand && !type) {
-                const candidateByName = await Item.findAndCountAll({
+                candidateDevice = await Item.findAndCountAll({
                     where: {
                         name: {
                             [Op.iLike]: '%' + name + '%'
                         }
                     }
                 })
-                if (!candidateByName) {
+                if (!candidateDevice) {
                     return res.json(ApiError.internal("Not Found"))
                 }
-                return res.json(candidateByName)
+                return res.json(candidateDevice)
             }
             if (!name && brand && !type) {
                 brand = brand.split(',')
-                let candidateBrand = await Brand.findAll({
+                candidateBrand = await Brand.findAll({
                     where: {
                         name: brand
                     }
@@ -168,20 +161,20 @@ class ItemController {
                 for (let i = 0; i < candidateBrand.length; i++) {
                     candidateBrand[i] = candidateBrand[i].dataValues.id
                 }
-                const candidateByName = await Item.findAndCountAll({
+                candidateDevice = await Item.findAndCountAll({
                     where: {
                         brandId: candidateBrand
                     }
                 })
-                if (!candidateByName) {
+                if (!candidateDevice) {
                     return res.json(ApiError.internal("Not Found"))
                 }
-                return res.json(candidateByName)
+                return res.json(candidateDevice)
 
             }
             if (!name && !brand && type) {
                 type = type.split(',')
-                let candidateType = await Type.findAll({
+                candidateType = await Type.findAll({
                     where: {
                         name: type
                     }
@@ -189,19 +182,19 @@ class ItemController {
                 for (let i = 0; i < candidateType.length; i++) {
                     candidateType[i] = candidateType[i].dataValues.id
                 }
-                const candidateByName = await Item.findAndCountAll({
+                candidateDevice = await Item.findAndCountAll({
                     where: {
                         typeId: candidateType
                     }
                 })
-                if (!candidateByName) {
+                if (!candidateDevice) {
                     return res.json(ApiError.internal("Not Found"))
                 }
-                return res.json(candidateByName)
+                return res.json(candidateDevice)
             }
             if (name && brand && !type) {
                 brand = brand.split(',')
-                let candidateBrand = await Brand.findAll({
+                 candidateBrand = await Brand.findAll({
                     where: {
                         name: brand
                     }
@@ -209,7 +202,7 @@ class ItemController {
                 for (let i = 0; i < candidateBrand.length; i++) {
                     candidateBrand[i] = candidateBrand[i].dataValues.id
                 }
-                const candidateByName = await Item.findAndCountAll({
+                candidateDevice = await Item.findAndCountAll({
                     where: {
                         brandId: candidateBrand,
                         name: {
@@ -217,23 +210,23 @@ class ItemController {
                         }
                     }
                 })
-                if (!candidateByName) {
+                if (!candidateDevice) {
                     return res.json(ApiError.internal("Not Found"))
                 }
 
-                return res.json(candidateByName)
+                return res.json(candidateDevice)
             }
             if (!name && brand && type) {
                 brand = brand.split(',')
                 type = type.split(',')
 
-                let candidateBrand = await Brand.findAll({
+                candidateBrand = await Brand.findAll({
                     where: {
                         name: brand
                     }
                 })
 
-                let candidateType = await Type.findAll({
+                candidateType = await Type.findAll({
                     where: {
                         name: type
                     }
@@ -245,21 +238,21 @@ class ItemController {
                 for (let i = 0; i < candidateType.length; i++) {
                     candidateType[i] = candidateType[i].dataValues.id
                 }
-                const candidateByName = await Item.findAndCountAll({
+                candidateDevice = await Item.findAndCountAll({
                     where: {
                         brandId: candidateBrand,
                         typeId: candidateType
                     }
                 })
-                if (!candidateByName) {
+                if (!candidateDevice) {
                     return res.json(ApiError.internal("Not Found"))
                 }
 
-                return res.json(candidateByName)
+                return res.json(candidateDevice)
             }
             if (name && !brand && type) {
                 type.split(',')
-                let candidateType = await Type.findAll({
+                candidateType = await Type.findAll({
                     where: {
                         name: type
                     }
@@ -267,7 +260,7 @@ class ItemController {
                 for (let i = 0; i < candidateType.length; i++) {
                     candidateType[i] = candidateType[i].dataValues.id
                 }
-                const candidateByName = await Item.findAndCountAll({
+                candidateDevice = await Item.findAndCountAll({
                     where: {
                         typeId: candidateType.id,
                         name: {
@@ -275,10 +268,10 @@ class ItemController {
                         }
                     }
                 })
-                if (!candidateByName) {
+                if (!candidateDevice) {
                     return res.json(ApiError.internal("Not Found"))
                 }
-                return res.json(candidateByName)
+                return res.json(candidateDevice)
             }
         } catch (e) {
             return res.json(ApiError.badRequest(e.message))
