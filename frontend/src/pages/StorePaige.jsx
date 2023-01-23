@@ -35,7 +35,7 @@ const StorePaige = () => {
         </Col>
         <Row>
           {items?.items?.map((item) => <ItemComponent key={item.id} {...item} />)}
-          {items.items.length === 0 ? <div className='text-center'> <h3>No elements found</h3>  </div> : ''}
+          {!items.items.length ? <div className='text-center'> <h3>No elements found</h3>  </div> : ''}
         </Row>
       </Row>
     </Container>

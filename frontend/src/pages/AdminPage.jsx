@@ -15,6 +15,7 @@ const AdminPage = () => {
 
     const [itemName, setItemName] = useState('')
     const [itemPrice, setItemPrice] = useState(0)
+    const [itemRating, setItemRating] = useState(0)
     const [itemBrand, setItemBrand] = useState('')
     const [itemType, setItemType] = useState('')
     const [itemInfo, setItemInfo] = useState('')
@@ -61,6 +62,7 @@ const AdminPage = () => {
             let data = {
                 name: itemName,
                 price: itemPrice,
+                rating: itemRating,
                 brandName: itemBrand,
                 typeName: itemType,
                 info: itemInfo,
@@ -108,6 +110,7 @@ const AdminPage = () => {
                     <Form.Group className='mb-3 d-flex-column' style={{ height: 300 }}  >
                         <Form.Control type='text' placeholder='Item Name' value={itemName} onChange={(e) => setItemName(e.target.value)} />
                         <Form.Control type='number' min={1} placeholder='Item Price' value={itemPrice} onChange={(e) => setItemPrice(e.target.value)} />
+                        <Form.Control type='number' min={1} max={5} placeholder='Item Rating' value={itemRating} onChange={(e) => setItemRating(e.target.value)} />
                         <Form.Control type='text' placeholder='Item Brand' value={itemBrand} onChange={(e) => setItemBrand(e.target.value)} />
                         <Form.Control type='text' placeholder='Item Type' value={itemType} onChange={(e) => setItemType(e.target.value)} />
                         <Form.Control type='text' placeholder='Item info' value={itemInfo} onChange={(e) => setItemInfo(e.target.value)} />

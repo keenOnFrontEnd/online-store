@@ -252,6 +252,7 @@ class ItemController {
             }
             if (name && !brand && type) {
                 type.split(',')
+                console.log(type)
                 candidateType = await Type.findAll({
                     where: {
                         name: type
@@ -259,10 +260,11 @@ class ItemController {
                 })
                 for (let i = 0; i < candidateType.length; i++) {
                     candidateType[i] = candidateType[i].dataValues.id
+                    console.log(candidateType[i])
                 }
                 candidateDevice = await Item.findAndCountAll({
                     where: {
-                        typeId: candidateType.id,
+                        typeId: candidateType,
                         name: {
                             [Op.iLike]: "%" + name + "%"
                         }
