@@ -49,7 +49,7 @@ let BasketItem = ({ id, index, count, user_id }) => {
   return <Card.Body className='p-4'>
     <Row className="align-items-center">
       <Col className='mb-2'>
-        <Card.Img src={'http://localhost:7000/' + item[index].img} alt="Image" className='img-thumbnail'/>
+        <Card.Img src={'http://localhost:7000/' + item[index].img} alt="Image" />
       </Col>
       <Col className="d-flex justify-content-center flex-column">
         <p className="small text-muted mb-4 pb-2">Name</p>

@@ -2,9 +2,14 @@ import axios from "axios";
 import { $host } from ".";
 
 
-export const getAll = async () => {
+export const getAll = async (URL) => {
     try {
-    const data = await $host.get('api/item')
+        let data;
+    if(URL) {
+        data = await $host.get('api/item' + URL)
+        return data
+    }
+    data = await $host.get('api/item')
     return data
     } catch (e) {
         return e

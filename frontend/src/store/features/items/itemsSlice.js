@@ -13,7 +13,12 @@ let initialState = {
 export const getItems = createAsyncThunk(
     'items/getitems',
     async (action,{rejectWithValue,fulfillWithValue,dispatch}) => {
-        let res = await getAll();
+         let res;
+        if(action) {
+            res = await getAll(action)
+        } else {
+            res = await getAll();
+        }
         if(res.status === 200) {
             dispatch(getAllItems(res.data))
         } else {
