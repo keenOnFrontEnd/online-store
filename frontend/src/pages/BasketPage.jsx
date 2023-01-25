@@ -1,86 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { Button, Card, Col, Container, Row } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { DecrementCount, getBasket, IncrementCount, RemoveItemFromBasket, Total} from '../store/features/basket/basketSlice'
-import { getItem } from '../store/features/items/itemsSlice'
-
-
-
-let BasketItem = ({ id, index, count, user_id }) => {
-
-  let [isLoading, setisLoading] = useState(true)
-  let dispatch = useDispatch()
-
-  useEffect(() => {
-    dispatch(getItem(id))
-  }, [id,dispatch])
-
-  let item = useSelector((state) => state.basket.basketItems)
-
-  let basket = useSelector((state) => state.basket.basket)
-
-  useEffect(() => {
-    if (item[index]) {
-      setisLoading(false)
-    }
-  }, [item, index])
-
-  let Delete = () => {
-    dispatch(RemoveItemFromBasket({id: basket.rows[index].id, user_id}))
-  }
-
-  let Increment = () => {
-    dispatch(IncrementCount({ id: basket.rows[index].id, index, user_id }))
-  }
-  let Decrement = () => {
-    if(count === 1) {
-      Delete()
-    } else {
-      dispatch(DecrementCount({ id: basket.rows[index].id, index, user_id }))
-    }
-  }
-
-  if (isLoading) {
-    return <div> Loading </div>
-  }
-
-
-
-  return <Card.Body className='p-4'>
-    <Row className="align-items-center">
-      <Col className='mb-2'>
-        <Card.Img src={'http://localhost:7000/' + item[index].img} alt="Image" />
-      </Col>
-      <Col className="d-flex justify-content-center flex-column">
-        <p className="small text-muted mb-4 pb-2">Name</p>
-        <p className="lead fw-normal mb-0">{item[index].name}</p>
-      </Col>
-      <Col className="d-flex justify-content-center flex-column">
-        <p className="small text-muted mb-4 pb-2">Brand</p>
-        <p className="lead fw-normal mb-0">{item[index].brandId ? item[index].brandId : "No Brand"}</p>
-      </Col>
-      <Col className="d-flex justify-content-center flex-column">
-        <p className="small text-muted mb-4 pb-2">Quantity</p>
-        <p className="lead fw-normal mb-0">
-          <Button onClick={() => Decrement()} size='sm' className='mr-3' variant='light'>-</Button>
-          {count}
-          <Button onClick={() => Increment()} size='sm' className='ml-3' variant='light'>+</Button></p>
-      </Col>
-      <Col className="d-flex justify-content-center flex-column">
-        <p className="small text-muted mb-4 pb-2">Price</p>
-        <p className="lead fw-normal mb-0">{item[index].price}</p>
-      </Col>
-      <Col className="d-flex justify-content-center flex-column">
-        <p className="small text-muted mb-4 pb-2">Total</p>
-        <p className="lead fw-normal mb-0">{item[index].price * count}</p>
-      </Col>
-      <Col className='d-flex justify-content-center'>
-        <Button size='sm' variant='outline-danger' onClick={() => Delete()}>Delete</Button>
-      </Col>
-    </Row>
-  </Card.Body>
-}
-
+import BasketItem from '../components/BasketItem'
+import { getBasket, Total } from '../store/features/basket/basketSlice'
 
 const BasketPage = () => {
 
@@ -97,12 +19,10 @@ const BasketPage = () => {
   }, [user_id, dispatch])
 
   useEffect(() => {
-    if(user_id ) {
+    if (user_id) {
       dispatch(Total(user_id))
     }
   }, [])
-  
-
   return (
     <section className='vh-100'>
       <Container className='h-100'>
@@ -111,8 +31,8 @@ const BasketPage = () => {
             <span className="h2">Shopping Cart </span>
             <span className="h4">( {basket?.count ? basket.count : 0} item in your cart)</span>
             <Card className='mt-5' bg='light'>
-              {basket?.rows.length ?
-                basket.rows.map((i, index) => <BasketItem key={i.id} id={i.itemId} index={index} count={i.count} user_id={user_id}/>) :
+              {basket?.rows?.length > 0 ?
+                basket.rows.map((i, index) => <BasketItem key={i.id} itemId={i.itemId} basketItemId={i.id} count={i.count} user_id={user_id} index={index}/>) :
 
                 <span className='h3'> No elements in the shopping cart </span>
 

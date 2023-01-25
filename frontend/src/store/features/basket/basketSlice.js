@@ -4,7 +4,11 @@ import { getBasketItems, addItemToBasket as add, Delete, Increment, Decrement, T
 
 let initialState = {
     basketItems: [],
-    totalCount: 0
+    totalCount: 0,
+    basket: {
+        count: 0,
+        rows : []
+    }
 }
 
 
@@ -37,9 +41,9 @@ export const AddItemToBasket = createAsyncThunk(
 export const RemoveItemFromBasket = createAsyncThunk(
     'basket/RemoveItemFromBasket',
     async (action, { rejectWithValue, fulfillWithValue, dispatch }) => {
+        dispatch(unsetBasketItem(action.itemId))
         await Delete(action.id)
         let total = await TotalCount(action.user_id)
-        dispatch(unsetBasketItem(action.id))
         dispatch(totalCount(total.data))
         fulfillWithValue('')
     }
@@ -93,8 +97,9 @@ const basketSlce = createSlice({
             state.basketItems.push(action.payload)
         },
         unsetBasketItem: (state, action) => {
-            state.basket.rows = state.basket.rows.filter((item) => item.id !== action.payload)
-            state.basket.count = state.basket.count - 1
+            
+            state.basket.rows = state.basket.rows.filter((item) => item.itemId !== action.payload)
+            
         },
         increment: (state,action) => {
             state.basket.rows[action.payload].count = state.basket.rows[action.payload].count + 1

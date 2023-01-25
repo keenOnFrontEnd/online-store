@@ -30,8 +30,13 @@ export const getItems = createAsyncThunk(
 export const getItem = createAsyncThunk(
     'items/getItem',
      async (action, {rejectWithValue,fulfillWithValue,dispatch}) => {
+        if(action === null) {
+            rejectWithValue('')
+        } else{
         let res = await getOne(action);
         dispatch(setBasket(res.data))
+        fulfillWithValue(res)
+        }
     }
 )
 

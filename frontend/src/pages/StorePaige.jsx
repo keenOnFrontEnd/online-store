@@ -1,13 +1,12 @@
 import queryString from 'query-string';
 import React, { useEffect } from 'react'
-import { useCallback } from 'react';
-import { useMemo } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom/dist/umd/react-router-dom.development';
 import ItemComponent from '../components/ItemComponent';
 import SearchComponent from '../components/SearchComponent';
 import { getItems } from '../store/features/items/itemsSlice';
+import { getbrands, gettypes } from '../store/features/search/searchSlice';
 
 const StorePaige = () => {
 
@@ -26,6 +25,10 @@ const StorePaige = () => {
     }
   }, [location.search])
 
+  useEffect(() => {
+    dispatch(getbrands())
+    dispatch(gettypes())
+  },[])
 
 
   return (

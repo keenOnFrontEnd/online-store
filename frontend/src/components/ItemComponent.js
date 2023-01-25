@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Card, ListGroup, Col } from 'react-bootstrap'
+import { Button, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { AddItemToBasket } from '../store/features/basket/basketSlice'
 import s from './itemComponent.module.css'
@@ -30,9 +30,9 @@ const ItemComponent = ({ name, price, rating, img, description, id }) => {
         </div>
         <div className={s.thumbContent}>
           <h4>{name}</h4>
-          <div className="star-rating">
+          {/* <div className="star-rating">
             {rating}
-          </div>
+          </div> */}
           <p className="item-price"><b>$ {price}</b></p>
           {isAuth ?
             <Button variant='outline-primary' onClick={() => addToCart()}>Add to cart</Button> : ''}
